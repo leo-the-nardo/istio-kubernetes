@@ -1,0 +1,67 @@
+# kubectl apply -f k8s/deployment.yaml
+
+#nginx-v1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-v1
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        version: "1.0"
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: leothenardo/sample-app:v1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 80
+
+---
+#nginx-v2
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-v2
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        version: "2.0"
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: leothenardo/sample-app:v2
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          ports:
+            - containerPort: 80
+
+---
+#service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx
+  ports:
+  - port: 8000
+    targetPort: 80
+    nodePort: 30000 # 8000 me -> 30000 svc -> 80 pod
