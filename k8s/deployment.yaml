@@ -6,7 +6,7 @@ kind: Deployment
 metadata:
   name: nginx-v1
 spec:
-  replicas: 8
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -33,7 +33,7 @@ kind: Deployment
 metadata:
   name: nginx-v2
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
