@@ -1,0 +1,71 @@
+# kubectl apply -f k8s/deployment.yaml
+
+# service-x-ok = 200
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-x-ok
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-x
+  template:
+    metadata:
+      labels:
+        app: service-x
+        version: "200"
+    spec:
+      containers:
+      - name: service-x
+        image: leothenardo/service-x
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 8000
+
+---
+# service-x-error = 500
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-x-error
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-x
+  template:
+    metadata:
+      labels:
+        app: service-x
+        version: "504"
+    spec:
+      containers:
+        - name: service-x
+          image: leothenardo/service-x
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          ports:
+            - containerPort: 8000
+          env:
+            - name: error
+              value: "yes"
+
+---
+#service
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-x-service
+spec:
+  type: ClusterIP
+  selector:
+    app: service-x
+  ports:
+  - port: 80
+    targetPort: 8000

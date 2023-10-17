@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: circuit-breaker-service-x
+spec:
+  host: service-x-service.default.svc.cluster.local
+  trafficPolicy:
+    outlierDetection: # circuit breaker
+      consecutive5xxErrors: 5
+      interval: 10s # 5 errors in 10sec will trip the circuit
+      baseEjectionTime: 30s
+      maxEjectionPercent: 100 # 100% of the traffic will be blocked for 30s
+
+#note : if you want, consider 500 to be an acceptable error ;  502,503,504 to be unacceptable (consecutiveGatewayErrors)
