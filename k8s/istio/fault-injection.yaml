@@ -7,11 +7,19 @@ spec:
   hosts:
     - nginx-service
   http:
-    - route:
+    - fault: # 100% of requests will be delayed 5s to simulate a slow service
+        delay:
+#          fixedDelay: 5s
+#          percentage:
+#            value: 50
+        abort:
+          httpStatus: 504
+          percentage:
+            value: 50
+      route:
         - destination:
             host: nginx-service
             subset: all
-          weight: 100
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
@@ -23,8 +31,7 @@ spec:
     loadBalancer:
       consistentHash:  #sticky session
         httpHeaderName: x-user-id
-# FLOW: curl nginxsvc Header "x-user-id:123" -> vs -> subset all -> DR make some magic with x-user-id to choose pod
-#        minimumRingSize: 1024
+  # FLOW: curl nginxsvc Header "x-user-id:123" -> vs -> subset all -> DR make some magic with x-user-id to choose pod
   subsets:
     - name: all
       labels:
