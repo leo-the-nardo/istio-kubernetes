@@ -66,4 +66,4 @@ spec:
   ports:
   - port: 8000
     targetPort: 80
-    nodePort: 30000 # 8000 me -> 30000 svc -> 80 pod
+    nodePort: 30001 # 8000 me -> 30000 svc -> 80 pod

@@ -11,8 +11,8 @@ spec:
     - destination:
         host: nginx-service
         subset: v1 # FLOW: nginx svc -> vs -> subset v1 -> DR
-      weight: 80
+      weight: 0
     - destination:
         host: nginx-service
         subset: v2
-      weight: 20
+      weight: 100
