@@ -5,10 +5,16 @@ metadata:
   name: nginx-dr
 spec:
   host: nginx-service
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
   subsets:
   - name: v1
     labels:
       version: "1.0" # FLOW: VS -> DR subset v1 -> Pod with label version: "1.0"
+    trafficPolicy:
+      loadBalancer:
+        simple: LEAST_CONN
   - name: v2
     labels:
       version: "2.0"

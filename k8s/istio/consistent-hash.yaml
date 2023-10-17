@@ -1,0 +1,31 @@
+# kubectl apply -f k8s/istio/consistent-hash.yaml
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: nginx-vs
+spec:
+  hosts:
+    - nginx-service
+  http:
+    - route:
+        - destination:
+            host: nginx-service
+            subset: all
+          weight: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: nginx-dr
+spec:
+  host: nginx-service
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:  #sticky session
+        httpHeaderName: x-user-id
+# FLOW: curl nginxsvc Header "x-user-id:123" -> vs -> subset all -> DR make some magic with x-user-id to choose pod
+#        minimumRingSize: 1024
+  subsets:
+    - name: all
+      labels:
+        app: nginx # FLOW: VS -> DR subset v1 -> Pod with label version: "1.0"
