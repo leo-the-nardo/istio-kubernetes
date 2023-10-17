@@ -27,15 +27,22 @@ spec:
   gateways:
     - ingress-gateway-k3s # bind to gateway
   http:
-    - route:
+    - match:
+        - uri:
+            prefix: /v2
+      route:
         - destination:
             host: nginx-service
-            subset: v1 # FLOW: nginx svc -> vs -> subset v1 -> DR
-          weight: 0
+            subset: v2 # FLOW: /v2 -> nginx svc -> vs -> subset v2 -> DR
+
+    - match:
+        - uri:
+            prefix: /
+      route:
         - destination:
             host: nginx-service
-            subset: v2
-          weight: 100
+            subset: v1 # FLOW: / -> nginx svc -> vs -> subset v2 -> DR
+
 ---
 # kubectl apply -f k8s/istio/dr.yaml
 apiVersion: networking.istio.io/v1alpha3
